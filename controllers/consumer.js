@@ -55,3 +55,56 @@ exports.consumerLogin = catchAsyncError(async(req, res, next) =>{
     
     sendToken(consumer, 200, res)
 })
+
+
+//Logout
+
+exports.logout = catchAsyncError(async (req, res, next) => {
+    res.cookie("token", null, {
+        expires: new Date(),
+        httpOnly: true
+    });
+    res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+    });
+});
+
+// User Profile
+
+exports.getProfile = catchAsyncError(async (req, res, next) =>{
+
+    const consumer = await Consummer.findById(req.consummer.id);
+    
+    res.status(200).json({
+        success: true,
+        consumer,
+    });
+})
+
+// Update Profile
+
+exports.updateProfile = catchAsyncError(async (req, res, next) =>{
+
+    const newUserData = {
+        firstName: req.body.firstName, 
+        lastName: req.body.lastName, 
+        email: req.body.email, 
+        phone: req.body.phone, 
+        address: req.body.address, 
+        subrub: req.body.subrub, 
+        state: req.body.state, 
+        pinCode: req.body.pinCode
+    };
+
+    const consummer = await Consummer.findByIdAndUpdate(req.consummer.id, newUserData, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: true,
+    })
+
+    res.status(200).json({
+        success: true,
+        consummer
+    });
+})

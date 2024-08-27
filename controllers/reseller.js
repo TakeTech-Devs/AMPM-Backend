@@ -59,3 +59,55 @@ exports.resellerLogin = catchAsyncError(async(req, res, next) =>{
     
     sendToken( reseller, 200, res)
 })
+
+//Logout
+
+exports.logout = catchAsyncError(async (req, res, next) => {
+    res.cookie("token", null, {
+        expires: new Date(),
+        httpOnly: true
+    });
+    res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+    });
+});
+
+
+// User Profile
+
+exports.getProfile = catchAsyncError(async (req, res, next) =>{
+
+    const reseller = await Reseller.findById(req.reseller.id);
+    
+    res.status(200).json({
+        success: true,
+        reseller,
+    });
+})
+
+
+// Update Profile
+
+exports.updateProfile = catchAsyncError(async (req, res, next) =>{
+
+    const newUserData = {
+        fullName: req.body.fullName, 
+        businessName: req.body.businessName, 
+        businessType: req.body.businessType, 
+        abn: req.body.abn, 
+        businessEmail: req.body.businessEmail, 
+        businessWebsite: req.body.businessWebsite, 
+    };
+
+    const reseller = await Reseller.findByIdAndUpdate(req.reseller.id, newUserData, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: true,
+    })
+
+    res.status(200).json({
+        success: true,
+        reseller
+    });
+})
