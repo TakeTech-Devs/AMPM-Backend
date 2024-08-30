@@ -4,6 +4,7 @@ const sendToken = require('../utils/token')
 const Admin = require('../models/adminModel');
 const Reseller = require('../models/resellerModel');
 const Home = require('../models/homeModel');
+const About = require('../models/aboutUsModel');
 
 
 // admin Registration
@@ -116,6 +117,9 @@ exports.homeHeader = catchAsyncError (async (req, res, next) => {
     })
 })
 
+
+// Home Highlight 
+
 exports.homeHighlight = catchAsyncError(async(req, res, next) =>{
 
     const { highlightOne, highlightTwo, highlightThree } = req.body
@@ -141,6 +145,8 @@ exports.homeHighlight = catchAsyncError(async(req, res, next) =>{
     })
 })
 
+// Home Batteries Section
+
 exports.batteriesSection = catchAsyncError(async (req, res, next) =>{
 
     const { batteriesHeading, batteriesDescription } = req.body
@@ -165,6 +171,9 @@ exports.batteriesSection = catchAsyncError(async (req, res, next) =>{
     })
 })
 
+
+// Home Contact Us
+
 exports.homeContactUs = catchAsyncError (async (req, res, next) => {
 
     const { ContactUS, ContactUSDescription } = req.body
@@ -186,5 +195,107 @@ exports.homeContactUs = catchAsyncError (async (req, res, next) => {
         success: true,
         message: 'Home Contact Us Updated Successfully',
         updateHomeContactUs
+    })
+})
+
+// Get Home
+
+exports.getHome = catchAsyncError (async (req, res, next) =>{
+    const home = await Home.find();
+
+    res.status(200).json({
+        success: true,
+        home,
+    })
+})
+
+//  About Section
+
+// About Header
+
+exports.aboutHeader = catchAsyncError(async (req, res, next) =>{
+    const { headerTitle, headerDescription } = req.body
+
+    const update ={
+        headerTitle,
+        headerDescription
+    };
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    };
+
+    const updateAboutHeader = await About.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'About Header Updated Successfully',
+        updateAboutHeader
+    })
+})
+
+// About Our Mission
+
+exports.ourMission = catchAsyncError(async (req, res, next) =>{
+
+    const { ourMissionTitle, ourMissionDescription } = req.body
+
+    const update = {
+        ourMissionTitle,
+        ourMissionDescription
+    };
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    };
+
+    const updateMission = await About.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'Our Mission Updated Successfully',
+        updateMission
+    })
+})
+
+// About What we do
+
+exports.weDoSection = catchAsyncError(async (req, res, next) =>{
+
+    const { weDoTitle, weDoDescription } = req.body
+
+    const  update ={
+        weDoTitle,
+        weDoDescription
+    };
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    };
+
+    const updateWeDoSection = await About.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'What We Do Section Updated Successfully',
+        updateWeDoSection
+    })
+})
+
+
+// Get About 
+
+exports.getAbout = catchAsyncError (async(req, res, next) =>{
+    const about = await About.find();
+
+    res.status(200).json({
+        success: true,
+        about
     })
 })
