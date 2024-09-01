@@ -1,5 +1,5 @@
 const express = require('express'); 
-const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection } = require('../controllers/admin');
+const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData } = require('../controllers/admin');
 const { isAdmin, authorizeRoles } = require('../middleware/auth');
 const router = express.Router();
 
@@ -22,6 +22,13 @@ router.route('/create-homeContact').post(isAdmin, authorizeRoles("admin"), homeC
 router.route('/create-aboutHeader').post(isAdmin, authorizeRoles("admin"), aboutHeader);
 router.route('/create-aboutMission').post(isAdmin, authorizeRoles("admin"), ourMission);
 router.route('/create-aboutWeDo').post(isAdmin, authorizeRoles("admin"), weDoSection);
+
+// Contact Info
+router.route('/create-contactInfo').post(isAdmin, authorizeRoles("admin"), contactInfo);
+
+
+// ContactUs Data
+router.route('/get-contactUs').get(isAdmin, authorizeRoles("admin"), getContactUsData);
 
 
 module.exports = router;

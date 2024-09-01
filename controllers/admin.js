@@ -5,6 +5,9 @@ const Admin = require('../models/adminModel');
 const Reseller = require('../models/resellerModel');
 const Home = require('../models/homeModel');
 const About = require('../models/aboutUsModel');
+const Cinfo = require('../models/contactInfoModel');
+const ContactUs = require('../models/contactUsModel');
+
 
 
 // admin Registration
@@ -297,5 +300,60 @@ exports.getAbout = catchAsyncError (async(req, res, next) =>{
     res.status(200).json({
         success: true,
         about
+    })
+})
+
+// Contact Info 
+
+exports.contactInfo = catchAsyncError(async (req, res, next) => {
+
+    const { Landline, Mobile, Email } = req.body;
+
+    const update = {
+        Landline,
+        Mobile,
+        Email
+    };
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    };
+
+    const updateContactInfo = await Cinfo.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'Contact Info Updated Successfully',
+        updateContactInfo
+    });
+
+})
+
+// Get Contact Info
+
+exports.getContactInfo = catchAsyncError(async(req, res, next) =>{
+
+    const contactInfo = await Cinfo.find();
+    
+    res.status(200).json({
+        success: true,
+        contactInfo
+    })
+})
+
+
+// Contact Us Form
+
+// Get Contact Us Form Data
+
+exports.getContactUsData = catchAsyncError(async (req, res, next) =>{
+    
+    const contactUsData = await ContactUs.find();
+
+    res.status(200).json({
+        success: true,
+        contactUsData
     })
 })
