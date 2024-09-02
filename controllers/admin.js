@@ -7,6 +7,7 @@ const Home = require('../models/homeModel');
 const About = require('../models/aboutUsModel');
 const Cinfo = require('../models/contactInfoModel');
 const ContactUs = require('../models/contactUsModel');
+const Order = require('../models/orderModel');
 
 
 
@@ -357,3 +358,60 @@ exports.getContactUsData = catchAsyncError(async (req, res, next) =>{
         contactUsData
     })
 })
+
+// Order
+
+// Get All Orders
+
+exports.getAllOrders = catchAsyncError(async (req, res, next) => {
+
+    const orders = await Order.find();
+
+    if (!orders) {
+        return next(new ErrorHandler("Order Not Found", 404));
+    }
+
+    let totalAmount = 0;
+    orders.forEach((order) => {
+        totalAmount += order.totalPrice;
+    });
+
+    res.status(200).json({
+        success: true,
+        orders,
+        totalAmount,
+    });
+});
+
+// Update Order Status
+
+exports.updateOrder = catchAsyncError(async (req, res, next) => {
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+        return next(new ErrorHandler("Order Not Found", 404));
+    }
+
+    if (order.orderStatus === "Delivered") {
+        return next(new ErrorHandler("Already Delivered", 400));
+    }
+
+    if (req.body.status === "Shipped") {
+        order.shippedAt = Date.now();
+        order.orderItems.forEach(async (i) => {
+            await updateStock(i.product, i.quantity)
+        });
+    }
+
+    order.orderStatus = req.body.status;
+    if (req.body.status === "Delivered") {
+        order.deliveredAt = Date.now();
+    }
+
+    await order.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+        success: true
+    });
+});

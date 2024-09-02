@@ -45,6 +45,33 @@ exports.isAdmin = catchAsyncError(async(req, res, next) =>{
     next();
 })
 
+exports.isAuthorized = catchAsyncError(async (req, res, next) => {
+    const { token } = req.cookies;
+
+    if (!token) {
+        return next(new ErrorHandler("Please Login to access this resource", 401));
+    }
+
+    const decodeData = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Try to find the user as a consumer
+    let user = await Consummer.findById(decodeData.id);
+    if (user) {
+        req.consumer = user;
+    } else {
+        // If not a consumer, try to find the user as a reseller
+        user = await Reseller.findById(decodeData.id);
+        if (user) {
+            req.reseller = user;
+        } else {
+            return next(new ErrorHandler("User not found", 404));
+        }
+    }
+
+    next();
+});
+
+
 exports.authorizeRoles = (...roles)=>{
     return(req,res,next)=>{
         if(!roles.includes(req.admin.role)){

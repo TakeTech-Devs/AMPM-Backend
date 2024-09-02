@@ -17,6 +17,7 @@ const reseller = require('./routes/resellerRoutes');
 const admin = require('./routes/adminRoutes');
 const all = require('./routes/allGetRoutes');
 const user = require('./routes/userRoutes');
+const order = require('./routes/orderRoutes');
 
 
 // Config api
@@ -25,6 +26,7 @@ app.use('/api/v1/reseller', reseller);
 app.use('/api/v1/admin', admin);
 app.use('/api/v1', all);
 app.use('/api/v1/user', user);
+app.use('/api/v1', order);
 
 
 // Middleware for Errors
