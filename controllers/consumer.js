@@ -9,10 +9,10 @@ const sendToken = require('../utils/token')
 
 exports.consumerRegistration = catchAsyncError(async(req, res, next) =>{
 
-    const {firstName, lastName, email, phone, address, subrub, state, pinCode, password} = req.body;
+    const {firstName, lastName, email, phone, address, suburb, state, pinCode, password} = req.body;
 
     const consumer = await Consummer.create({
-        firstName, lastName, email, phone, address, subrub, state, pinCode, password
+        firstName, lastName, email, phone, address, suburb, state, pinCode, password
     });
 
     // res.status(200).json({

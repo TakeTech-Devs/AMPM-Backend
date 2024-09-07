@@ -23,7 +23,7 @@ const consumerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    subrub: {
+    suburb: {
         type: String,
         required: true
     },

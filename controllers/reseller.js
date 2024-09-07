@@ -8,10 +8,10 @@ const sendToken = require("../utils/token");
 
 exports.resellerRegistration = catchAsyncError(async(req, res, next) =>{
 
-    const { fullName, businessName, businessType, abn, businessEmail, businessWebsite, password } = req.body;
+    const { fullName, businessName, businessType, abn, businessEmail, businessWebsite, businessPassword } = req.body;
 
     const reseller = await Reseller.create({
-        fullName, businessName, businessType, abn, businessEmail, businessWebsite, password
+        fullName, businessName, businessType, abn, businessEmail, businessWebsite, businessPassword
     });
 
     // res.status(200).json({
@@ -35,13 +35,13 @@ exports.resellerRegistration = catchAsyncError(async(req, res, next) =>{
 
 exports.resellerLogin = catchAsyncError(async(req, res, next) =>{
 
-    const { businessEmail, password } = req.body;
+    const { businessEmail, businessPassword } = req.body;
 
-    if (!businessEmail || !password){
+    if (!businessEmail || !businessPassword){
         return next(new ErrorHandler("Please Enter Email and Password", 400));
     }
 
-    const reseller = await Reseller.findOne({ businessEmail }).select("+password");
+    const reseller = await Reseller.findOne({ businessEmail }).select("+businessPassword");
 
     if(!reseller){
         return next(new ErrorHandler("Invalid Email or Password", 401));
@@ -51,7 +51,7 @@ exports.resellerLogin = catchAsyncError(async(req, res, next) =>{
         return next(new ErrorHandler("Your account is not approved yet. Please contact support.", 403));
     }
 
-    const isPasswordMatched = await reseller.comparePassword(password);
+    const isPasswordMatched = await reseller.comparePassword(businessPassword);
 
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid Email or Password", 401));

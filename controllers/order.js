@@ -47,7 +47,6 @@ exports.newOrder = catchAsyncError(async (req, res, next) =>{
 exports.myOrders = catchAsyncError(async (req, res, next) =>{
     let userId;
 
-    // Determine if the logged-in user is a consumer or a reseller
     if (req.consumer) {
         userId = req.consumer._id;
     } else if (req.reseller) {
