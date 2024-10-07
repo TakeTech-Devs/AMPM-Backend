@@ -8,16 +8,15 @@ exports.newOrder = catchAsyncError(async (req, res, next) =>{
     const {
         shippingInfo,
         orderItems,
-        user,
-        paymentInfo,
+        // paymentInfo,
         totalPrice,
     } = req.body
 
-    const orderExist = await Order.findOne({ paymentInfo });
+    // const orderExist = await Order.findOne({ paymentInfo });
 
-    if (orderExist) {
-        return next(new ErrorHandler("Order Already Placed", 400));
-    }
+    // if (orderExist) {
+    //     return next(new ErrorHandler("Order Already Placed", 400));
+    // }
 
 
     const orderedBy = req.consumer ? req.consumer._id : req.reseller ? req.reseller._id : null;
@@ -29,8 +28,7 @@ exports.newOrder = catchAsyncError(async (req, res, next) =>{
     const order = await Order.create({
         shippingInfo,
         orderItems,
-        user,
-        paymentInfo,
+        // paymentInfo,
         totalPrice,
         paidAt: Date.now(),
         oredeBy: orderedBy,
@@ -57,9 +55,9 @@ exports.myOrders = catchAsyncError(async (req, res, next) =>{
 
     const orders = await Order.find({ oredeBy: userId });
 
-    if (!orders || orders.length === 0) {
-        return next(new ErrorHandler("Order Not Found", 404));
-    }
+    // if (!orders || orders.length === 0) {
+    //     return next(new ErrorHandler("Order Not Found", 404));
+    // }
 
     res.status(200).json({
         success: true,

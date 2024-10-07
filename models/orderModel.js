@@ -2,11 +2,19 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     shippingInfo: {
-        address: {
+        firstName:{
+            type: String,
+            required: true
+        },
+        lastName:{
             type: String,
             required: true
         },
         country: {
+            type: String,
+            required: true
+        },
+        address: {
             type: String,
             required: true
         },
@@ -18,11 +26,11 @@ const orderSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        pincode: {
+        pin: {
             type: Number,
             required: true
         },
-        phoneNo: {
+        phone: {
             type: Number,
         },
         email: {
@@ -32,6 +40,10 @@ const orderSchema = new mongoose.Schema({
     },
     orderItems: [
         {
+            product:{
+                type: String,
+                required: true
+            },
             name: {
                 type: String,
                 required: true
@@ -46,32 +58,21 @@ const orderSchema = new mongoose.Schema({
             },
         }
     ],
-
-    user: {
-        fName: {
-            type: String,
-            required: true
-        },
-        lName: {
-            type: String,
-            required: true
-        },
-    },
     oredeBy: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
         required: true
     },
-    paymentInfo: {
-        id: {
-            type: String,
-            required: true
-        },
-        status: {
-            type: String,
-            required: true
-        },
-    },
+    // paymentInfo: {
+    //     id: {
+    //         type: String,
+    //         required: true
+    //     },
+    //     status: {
+    //         type: String,
+    //         required: true
+    //     },
+    // },
     paidAt: {
         type: Date,
         required: true
