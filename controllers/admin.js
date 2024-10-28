@@ -8,6 +8,7 @@ const About = require('../models/aboutUsModel');
 const Cinfo = require('../models/contactInfoModel');
 const ContactUs = require('../models/contactUsModel');
 const Order = require('../models/orderModel');
+const Consummer = require ('../models/consumerModel');
 
 
 
@@ -66,6 +67,18 @@ exports.logout = catchAsyncError(async (req, res, next) => {
     });
 });
 
+exports.adminList = catchAsyncError(async (req, res, next) =>{
+    
+    const admin = await Admin.find();
+    
+    res.status(200).json({
+        success: true,
+        admin,
+    });
+    
+})
+
+// Rwseller 
 
 // Approve - reseller
 
@@ -88,6 +101,30 @@ exports.resellerApproval = catchAsyncError(async (req, res, next) =>{
         message: message,
     });
 
+})
+
+exports.resellerList = catchAsyncError(async (req, res, next) =>{
+    
+    const reseller = await Reseller.find();
+    
+    res.status(200).json({
+        success: true,
+        reseller,
+    });
+
+})
+
+// Consumer
+
+exports.consumerList = catchAsyncError(async (req, res, next) =>{
+    
+    const consumer = await Consummer.find();
+    
+    res.status(200).json({
+        success: true,
+        consumer,
+    });
+    
 })
 
 // Home Section
@@ -308,9 +345,11 @@ exports.getAbout = catchAsyncError (async(req, res, next) =>{
 
 exports.contactInfo = catchAsyncError(async (req, res, next) => {
 
-    const { Landline, Mobile, Email } = req.body;
+    const {headerTitle, headerDescription, Landline, Mobile, Email } = req.body;
 
     const update = {
+        headerTitle,
+        headerDescription,
         Landline,
         Mobile,
         Email

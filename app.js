@@ -6,14 +6,39 @@ const  cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 
-dotenv.config({path:"config/config.env"});
+// dotenv.config({path:"config/config.env"});
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials:true
-}));
+// app.use(cors({
+//     origin: 'http://localhost:5173',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials:true
+// }));
+
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        console.log(`Request origin: ${origin}`);  // Log origin
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.error(`Blocked by CORS: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization',
+    optionsSuccessStatus: 204
+};
+
+
+app.use(cors(corsOptions));
+
+// app.options('*', cors(corsOptions));
+
 
 
 app.use(express.json());
