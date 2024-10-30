@@ -35,6 +35,7 @@ exports.isReseller = catchAsyncError(async(req, res, next) =>{
 exports.isAdmin = catchAsyncError(async(req, res, next) =>{
     const { token } = req.cookies;
 
+
     if(!token){
         return next(new ErrorHandler("Please Login to access this resource",401));
     }
@@ -72,11 +73,11 @@ exports.isAuthorized = catchAsyncError(async (req, res, next) => {
 });
 
 
-exports.authorizeRoles = (...roles)=>{
-    return(req,res,next)=>{
-        if(!roles.includes(req.admin.role)){
-            return next(new ErrorHandler(`Role: ${req.admin.role} is not allowed to access this resouce`,403));
-        }
-        next();
-    };
-}
+    exports.authorizeRoles = (...roles)=>{
+        return(req,res,next)=>{
+            if(!roles.includes(req.admin.role)){
+                return next(new ErrorHandler(`Role: ${req.admin.role} is not allowed to access this resouce`,403));
+            }
+            next();
+        };
+    }

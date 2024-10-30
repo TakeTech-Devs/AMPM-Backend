@@ -67,6 +67,17 @@ exports.logout = catchAsyncError(async (req, res, next) => {
     });
 });
 
+
+exports.getAdminProfile = catchAsyncError(async (req, res, next) =>{
+
+    const user = await Admin.findById(req.admin.id);
+    
+    res.status(200).json({
+        success: true,
+        user,
+    });
+})
+
 exports.adminList = catchAsyncError(async (req, res, next) =>{
     
     const admin = await Admin.find();
