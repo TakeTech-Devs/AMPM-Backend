@@ -13,7 +13,8 @@ router.route('/profile').get(isAdmin ,getAdminProfile);
 router.route('/admins').get(adminList);
 
 // Reseller
-router.route('/reseller/approve/:id').put(isAdmin, authorizeRoles("admin"), resellerApproval);
+// router.route('/reseller/approve/:id').put(isAdmin, authorizeRoles("admin"), resellerApproval);
+router.route('/reseller/approve/:id').put(resellerApproval);
 // router.route('/resellers').get(isAdmin, authorizeRoles("admin"), resellerList);
 router.route('/resellers').get(resellerList);
 
