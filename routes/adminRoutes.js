@@ -1,5 +1,5 @@
 const express = require('express'); 
-const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile } = require('../controllers/admin');
+const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile, productHeader, amaronBattery, batteryCard, featureProduct } = require('../controllers/admin');
 const { isAdmin, authorizeRoles } = require('../middleware/auth');
 const router = express.Router();
 
@@ -54,6 +54,13 @@ router.route('/get-contactUs').get(getContactUsData);
 router.route('/get-allOrders').get(getAllOrders)
 // router.route('/admin/order/:id').put(isAdmin, authorizeRoles("admin"), updateOrder)
 router.route('/admin/order/:id').put(updateOrder)
+
+// Product
+
+router.route('/create-productHeader').post(productHeader)
+router.route('/create-battery').post(amaronBattery)
+router.route('/create-batteryCard').post(batteryCard)
+router.route('/create-featureProduct').post(featureProduct)
 
 
 module.exports = router;

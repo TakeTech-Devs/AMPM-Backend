@@ -9,6 +9,7 @@ const Cinfo = require('../models/contactInfoModel');
 const ContactUs = require('../models/contactUsModel');
 const Order = require('../models/orderModel');
 const Consummer = require ('../models/consumerModel');
+const Product = require('../models/productModel');
 
 
 
@@ -465,3 +466,127 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
         success: true
     });
 });
+
+// Product
+
+// Product Header 
+
+exports.productHeader = catchAsyncError(async (req, res, next) =>{
+    const { headerTitle, headerDescription } = req.body
+
+    const update ={
+        headerTitle,
+        headerDescription
+    };
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    };
+
+    const updateProductHeader = await Product.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'Product Header Updated Successfully',
+        updateProductHeader
+    })
+}) 
+
+
+// Amaron Battery
+
+exports.amaronBattery = catchAsyncError(async(req, res, next) =>{
+
+
+    const { batteryTitle, batteryDescription } = req.body;
+
+    const update = {
+        batteryTitle,
+        batteryDescription
+    }
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    }
+
+    const updateAmaronBattery =  await Product.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'Amaron Battary Updated Successfully',
+        updateAmaronBattery
+    })
+
+})
+
+// Battery Card
+
+exports.batteryCard = catchAsyncError(async(req, res, next) =>{
+
+    const { batteryCardOne, batteryCardTwo, batteryCardThree } = req.body;
+
+    const update = {
+        batteryCardOne,
+        batteryCardTwo,
+        batteryCardThree
+    }
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    }
+
+    const updateBatteryCard = await Product.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'Battary Card Updated Successfully',
+        updateBatteryCard
+    })
+})
+
+// Feature Product
+
+exports.featureProduct =catchAsyncError(async (req, res, next) =>{
+    // let points =  [];
+
+    // req.body.featureProductPoints.forEach((s) =>{
+    //     points.push(JSON.parse(s));
+    // });
+
+    // req.body.featureProductPoints = points;
+
+    // const updateFeatureProduct = await Product.findOneAndUpdate(req.body);
+
+    // res.status(200).json({
+    //     success: true,
+    //     message: 'Featuer Product Updated Successfully',
+    //     updateFeatureProduct
+    // })
+
+    const { featureProduct, featureProductPoints } = req.body;
+
+    const update = {
+        featureProduct,
+        featureProductPoints
+    }
+
+    const options = {
+        new: true,
+        upsert: true,
+        useFindAndModify: false
+    }
+
+    const updateFeatureProduct =  await Product.findOneAndUpdate({}, update, options);
+
+    res.status(200).json({
+        success: true,
+        message: 'Amaron Battary Updated Successfully',
+        updateFeatureProduct
+    })
+})
