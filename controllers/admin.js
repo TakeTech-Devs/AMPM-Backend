@@ -553,21 +553,6 @@ exports.batteryCard = catchAsyncError(async(req, res, next) =>{
 // Feature Product
 
 exports.featureProduct =catchAsyncError(async (req, res, next) =>{
-    // let points =  [];
-
-    // req.body.featureProductPoints.forEach((s) =>{
-    //     points.push(JSON.parse(s));
-    // });
-
-    // req.body.featureProductPoints = points;
-
-    // const updateFeatureProduct = await Product.findOneAndUpdate(req.body);
-
-    // res.status(200).json({
-    //     success: true,
-    //     message: 'Featuer Product Updated Successfully',
-    //     updateFeatureProduct
-    // })
 
     const { featureProduct, featureProductPoints } = req.body;
 
@@ -589,4 +574,50 @@ exports.featureProduct =catchAsyncError(async (req, res, next) =>{
         message: 'Amaron Battary Updated Successfully',
         updateFeatureProduct
     })
+})
+
+// Delete Feature Product Point
+
+exports.deleteFeatureProductPoint = catchAsyncError(async (req, res, next) => {
+    const { id } = req.params; // Product ID from URL parameter
+    const { pointToRemove } = req.body; // Point to remove from featureProductPoints array
+
+    if (!pointToRemove) {
+        return res.status(400).json({
+            success: false,
+            message: 'Please specify the point to remove.'
+        });
+    }
+
+    const update = { $pull: { featureProductPoints: pointToRemove } };
+    const options = { new: true, useFindAndModify: false };
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, update, options);
+
+    if (!updatedProduct) {
+        return res.status(404).json({
+            success: false,
+            message: 'Product not found.'
+        });
+    }
+
+    res.status(200).json({
+        success: true,
+        message: 'Feature product point removed successfully.',
+        product: updatedProduct
+    });
+});
+
+// Get Product Page Data
+
+exports.getProductData = catchAsyncError(async(req, res, next) =>{
+
+    const productData = await Product.find();
+
+    res.status(200).json({
+        success: true,
+        productData
+    });
+
+
 })
