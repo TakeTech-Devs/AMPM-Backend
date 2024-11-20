@@ -116,25 +116,63 @@ exports.resellerApproval = catchAsyncError(async (req, res, next) =>{
 })
 
 exports.resellerList = catchAsyncError(async (req, res, next) =>{
-    
-    const reseller = await Reseller.find();
-    
+
+    const { duration } = req.query; 
+    let startDate;
+    let filter = {}; 
+
+    if (duration === "3months") {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 3);
+    } else if (duration === "6months") {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 6);
+    } else if (duration === "1year") {
+        startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 1);
+    }
+
+    if (startDate) {
+        filter.createdAt = { $gte: startDate };
+    }
+
+    const reseller = await Reseller.find(filter);
+
     res.status(200).json({
         success: true,
         reseller,
     });
-
 })
 
 // Consumer
 
 exports.consumerList = catchAsyncError(async (req, res, next) =>{
-    
-    const consumer = await Consummer.find();
-    
+
+    const { duration } = req.query; 
+    let startDate;
+    let filter = {}; 
+
+
+    if (duration === "3months") {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 3);
+    } else if (duration === "6months") {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 6);
+    } else if (duration === "1year") {
+        startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 1);
+    }
+
+    if (startDate) {
+        filter.createdAt = { $gte: startDate };
+    }
+
+    const consumers = await Consummer.find(filter);
+
     res.status(200).json({
         success: true,
-        consumer,
+        consumers,
     });
     
 })
