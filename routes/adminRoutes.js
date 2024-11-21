@@ -1,5 +1,5 @@
 const express = require('express'); 
-const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile, productHeader, amaronBattery, batteryCard, featureProduct, getProductData, deleteFeatureProductPoint } = require('../controllers/admin');
+const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile, productHeader, amaronBattery, batteryCard, featureProduct, getProductData, deleteFeatureProductPoint, creatediscountCoupon, getdiscountCoupon, couponAvailability, deleteCoupon } = require('../controllers/admin');
 const { isAdmin, authorizeRoles } = require('../middleware/auth');
 const router = express.Router();
 
@@ -56,7 +56,6 @@ router.route('/get-allOrders').get(getAllOrders)
 router.route('/admin/order/:id').put(updateOrder)
 
 // Product
-
 router.route('/create-productHeader').post(productHeader)
 router.route('/create-battery').post(amaronBattery)
 router.route('/create-batteryCard').post(batteryCard)
@@ -64,5 +63,11 @@ router.route('/create-featureProduct').post(featureProduct)
 router.route('/product/feature-point/:id').delete(deleteFeatureProductPoint)
 router.route('/get-productData').get(getProductData)
 
+// Coupon
+
+router.route('/create-coupon').post(creatediscountCoupon)
+router.route('/get-coupons').get(getdiscountCoupon)
+router.route('/coupon/availability/:id').put(couponAvailability);
+router.route('/coupon/:id').delete(deleteCoupon);
 
 module.exports = router;

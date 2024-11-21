@@ -8,14 +8,16 @@ const About = require('../models/aboutUsModel');
 const Cinfo = require('../models/contactInfoModel');
 const ContactUs = require('../models/contactUsModel');
 const Order = require('../models/orderModel');
-const Consummer = require ('../models/consumerModel');
+const Consummer = require('../models/consumerModel');
 const Product = require('../models/productModel');
+const Coupon = require('../models/discountCouponModel');
+const mongoose = require('mongoose');
 
 
 
 // admin Registration
 
-exports.adminRegistration = catchAsyncError(async(req, res, next) => {
+exports.adminRegistration = catchAsyncError(async (req, res, next) => {
     const { name, email, password } = req.body;
 
     const admin = await Admin.create({
@@ -36,7 +38,7 @@ exports.adminRegistration = catchAsyncError(async(req, res, next) => {
 
 // admin login
 
-exports.adminLogin = catchAsyncError(async(req, res, next) =>{
+exports.adminLogin = catchAsyncError(async (req, res, next) => {
 
     const { email, password } = req.body;
 
@@ -69,36 +71,36 @@ exports.logout = catchAsyncError(async (req, res, next) => {
 });
 
 
-exports.getAdminProfile = catchAsyncError(async (req, res, next) =>{
+exports.getAdminProfile = catchAsyncError(async (req, res, next) => {
 
     const user = await Admin.findById(req.admin.id);
-    
+
     res.status(200).json({
         success: true,
         user,
     });
 })
 
-exports.adminList = catchAsyncError(async (req, res, next) =>{
-    
+exports.adminList = catchAsyncError(async (req, res, next) => {
+
     const admin = await Admin.find();
-    
+
     res.status(200).json({
         success: true,
         admin,
     });
-    
+
 })
 
 // Rwseller 
 
 // Approve - reseller
 
-exports.resellerApproval = catchAsyncError(async (req, res, next) =>{
+exports.resellerApproval = catchAsyncError(async (req, res, next) => {
 
     const reseller = await Reseller.findById(req.params.id);
 
-    if(!reseller){
+    if (!reseller) {
         return next(new ErrorHandler('Reseller not found', 404));
     };
 
@@ -115,11 +117,11 @@ exports.resellerApproval = catchAsyncError(async (req, res, next) =>{
 
 })
 
-exports.resellerList = catchAsyncError(async (req, res, next) =>{
+exports.resellerList = catchAsyncError(async (req, res, next) => {
 
-    const { duration } = req.query; 
+    const { duration } = req.query;
     let startDate;
-    let filter = {}; 
+    let filter = {};
 
     if (duration === "3months") {
         startDate = new Date();
@@ -146,11 +148,11 @@ exports.resellerList = catchAsyncError(async (req, res, next) =>{
 
 // Consumer
 
-exports.consumerList = catchAsyncError(async (req, res, next) =>{
+exports.consumerList = catchAsyncError(async (req, res, next) => {
 
-    const { duration } = req.query; 
+    const { duration } = req.query;
     let startDate;
-    let filter = {}; 
+    let filter = {};
 
 
     if (duration === "3months") {
@@ -174,15 +176,15 @@ exports.consumerList = catchAsyncError(async (req, res, next) =>{
         success: true,
         consumers,
     });
-    
+
 })
 
 // Home Section
 
 // Home Header
 
-exports.homeHeader = catchAsyncError (async (req, res, next) => {
-    
+exports.homeHeader = catchAsyncError(async (req, res, next) => {
+
     const { headerTitle, headerDescription, headerPointOne, headerPointTwo, headerPointThree } = req.body
 
     const update = {
@@ -211,11 +213,11 @@ exports.homeHeader = catchAsyncError (async (req, res, next) => {
 
 // Home Highlight 
 
-exports.homeHighlight = catchAsyncError(async(req, res, next) =>{
+exports.homeHighlight = catchAsyncError(async (req, res, next) => {
 
     const { highlightOne, highlightTwo, highlightThree } = req.body
 
-    const update ={
+    const update = {
         highlightOne,
         highlightTwo,
         highlightThree
@@ -238,7 +240,7 @@ exports.homeHighlight = catchAsyncError(async(req, res, next) =>{
 
 // Home Batteries Section
 
-exports.batteriesSection = catchAsyncError(async (req, res, next) =>{
+exports.batteriesSection = catchAsyncError(async (req, res, next) => {
 
     const { batteriesHeading, batteriesDescription } = req.body
 
@@ -265,7 +267,7 @@ exports.batteriesSection = catchAsyncError(async (req, res, next) =>{
 
 // Home Contact Us
 
-exports.homeContactUs = catchAsyncError (async (req, res, next) => {
+exports.homeContactUs = catchAsyncError(async (req, res, next) => {
 
     const { ContactUS, ContactUSDescription } = req.body
 
@@ -291,7 +293,7 @@ exports.homeContactUs = catchAsyncError (async (req, res, next) => {
 
 // Get Home
 
-exports.getHome = catchAsyncError (async (req, res, next) =>{
+exports.getHome = catchAsyncError(async (req, res, next) => {
     const home = await Home.find();
 
     res.status(200).json({
@@ -304,10 +306,10 @@ exports.getHome = catchAsyncError (async (req, res, next) =>{
 
 // About Header
 
-exports.aboutHeader = catchAsyncError(async (req, res, next) =>{
+exports.aboutHeader = catchAsyncError(async (req, res, next) => {
     const { headerTitle, headerDescription } = req.body
 
-    const update ={
+    const update = {
         headerTitle,
         headerDescription
     };
@@ -329,7 +331,7 @@ exports.aboutHeader = catchAsyncError(async (req, res, next) =>{
 
 // About Our Mission
 
-exports.ourMission = catchAsyncError(async (req, res, next) =>{
+exports.ourMission = catchAsyncError(async (req, res, next) => {
 
     const { ourMissionTitle, ourMissionDescription } = req.body
 
@@ -355,11 +357,11 @@ exports.ourMission = catchAsyncError(async (req, res, next) =>{
 
 // About What we do
 
-exports.weDoSection = catchAsyncError(async (req, res, next) =>{
+exports.weDoSection = catchAsyncError(async (req, res, next) => {
 
     const { weDoTitle, weDoDescription } = req.body
 
-    const  update ={
+    const update = {
         weDoTitle,
         weDoDescription
     };
@@ -382,7 +384,7 @@ exports.weDoSection = catchAsyncError(async (req, res, next) =>{
 
 // Get About 
 
-exports.getAbout = catchAsyncError (async(req, res, next) =>{
+exports.getAbout = catchAsyncError(async (req, res, next) => {
     const about = await About.find();
 
     res.status(200).json({
@@ -395,7 +397,7 @@ exports.getAbout = catchAsyncError (async(req, res, next) =>{
 
 exports.contactInfo = catchAsyncError(async (req, res, next) => {
 
-    const {headerTitle, headerDescription, Landline, Mobile, Email } = req.body;
+    const { headerTitle, headerDescription, Landline, Mobile, Email } = req.body;
 
     const update = {
         headerTitle,
@@ -423,10 +425,10 @@ exports.contactInfo = catchAsyncError(async (req, res, next) => {
 
 // Get Contact Info
 
-exports.getContactInfo = catchAsyncError(async(req, res, next) =>{
+exports.getContactInfo = catchAsyncError(async (req, res, next) => {
 
     const contactInfo = await Cinfo.find();
-    
+
     res.status(200).json({
         success: true,
         contactInfo
@@ -438,8 +440,8 @@ exports.getContactInfo = catchAsyncError(async(req, res, next) =>{
 
 // Get Contact Us Form Data
 
-exports.getContactUsData = catchAsyncError(async (req, res, next) =>{
-    
+exports.getContactUsData = catchAsyncError(async (req, res, next) => {
+
     const contactUsData = await ContactUs.find();
 
     res.status(200).json({
@@ -454,17 +456,58 @@ exports.getContactUsData = catchAsyncError(async (req, res, next) =>{
 
 exports.getAllOrders = catchAsyncError(async (req, res, next) => {
 
-    const orders = await Order.find();
+    // const orders = await Order.find();
 
-    if (!orders) {
+    // if (!orders) {
+    //     return next(new ErrorHandler("Order Not Found", 404));
+    // }
+
+    // let totalAmount = 0;
+    // orders.forEach((order) => {
+    //     totalAmount += order.totalPrice;
+    // });
+
+    // res.status(200).json({
+    //     success: true,
+    //     orders,
+    //     totalAmount,
+    // });
+
+    const { duration } = req.query;
+    let startDate;
+    let filter = {};
+
+    // Set the start date based on the duration query parameter
+    if (duration === "3months") {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 3);
+    } else if (duration === "6months") {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 6);
+    } else if (duration === "1year") {
+        startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 1);
+    }
+
+    // Apply the date filter if startDate is set
+    if (startDate) {
+        filter.createdAt = { $gte: startDate };
+    }
+
+    // Fetch orders based on the filter
+    const orders = await Order.find(filter);
+
+    if (!orders || orders.length === 0) {
         return next(new ErrorHandler("Order Not Found", 404));
     }
 
+    // Calculate the total amount
     let totalAmount = 0;
     orders.forEach((order) => {
         totalAmount += order.totalPrice;
     });
 
+    // Send the response
     res.status(200).json({
         success: true,
         orders,
@@ -509,10 +552,10 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
 
 // Product Header 
 
-exports.productHeader = catchAsyncError(async (req, res, next) =>{
+exports.productHeader = catchAsyncError(async (req, res, next) => {
     const { headerTitle, headerDescription } = req.body
 
-    const update ={
+    const update = {
         headerTitle,
         headerDescription
     };
@@ -530,12 +573,12 @@ exports.productHeader = catchAsyncError(async (req, res, next) =>{
         message: 'Product Header Updated Successfully',
         updateProductHeader
     })
-}) 
+})
 
 
 // Amaron Battery
 
-exports.amaronBattery = catchAsyncError(async(req, res, next) =>{
+exports.amaronBattery = catchAsyncError(async (req, res, next) => {
 
 
     const { batteryTitle, batteryDescription } = req.body;
@@ -551,7 +594,7 @@ exports.amaronBattery = catchAsyncError(async(req, res, next) =>{
         useFindAndModify: false
     }
 
-    const updateAmaronBattery =  await Product.findOneAndUpdate({}, update, options);
+    const updateAmaronBattery = await Product.findOneAndUpdate({}, update, options);
 
     res.status(200).json({
         success: true,
@@ -563,7 +606,7 @@ exports.amaronBattery = catchAsyncError(async(req, res, next) =>{
 
 // Battery Card
 
-exports.batteryCard = catchAsyncError(async(req, res, next) =>{
+exports.batteryCard = catchAsyncError(async (req, res, next) => {
 
     const { batteryCardOne, batteryCardTwo, batteryCardThree } = req.body;
 
@@ -590,7 +633,7 @@ exports.batteryCard = catchAsyncError(async(req, res, next) =>{
 
 // Feature Product
 
-exports.featureProduct =catchAsyncError(async (req, res, next) =>{
+exports.featureProduct = catchAsyncError(async (req, res, next) => {
 
     const { featureProduct, featureProductPoints } = req.body;
 
@@ -605,7 +648,7 @@ exports.featureProduct =catchAsyncError(async (req, res, next) =>{
         useFindAndModify: false
     }
 
-    const updateFeatureProduct =  await Product.findOneAndUpdate({}, update, options);
+    const updateFeatureProduct = await Product.findOneAndUpdate({}, update, options);
 
     res.status(200).json({
         success: true,
@@ -648,7 +691,7 @@ exports.deleteFeatureProductPoint = catchAsyncError(async (req, res, next) => {
 
 // Get Product Page Data
 
-exports.getProductData = catchAsyncError(async(req, res, next) =>{
+exports.getProductData = catchAsyncError(async (req, res, next) => {
 
     const productData = await Product.find();
 
@@ -658,4 +701,95 @@ exports.getProductData = catchAsyncError(async(req, res, next) =>{
     });
 
 
+})
+
+// Coupon
+
+// Create Coupon
+
+exports.creatediscountCoupon = catchAsyncError(async (req, res, next) => {
+    const { code, discountType, discountValue, minPurchaseAmount, expiryDate } = req.body;
+
+    const discountValueDecimal = mongoose.Types.Decimal128.fromString(parseFloat(discountValue).toFixed(2));
+    const minPurchaseAmountDecimal = mongoose.Types.Decimal128.fromString(parseFloat(minPurchaseAmount).toFixed(2));
+
+    const existingCoupon = await Coupon.findOne({ code });
+
+    if (existingCoupon) {
+        return next(new ErrorHandler("Coupon code already exists", 400));
+    }
+
+    const newCoupon = new Coupon({
+        code,
+        discountType,
+        discountValue: discountValueDecimal,
+        minPurchaseAmount: minPurchaseAmountDecimal,
+        expiryDate,
+    });
+
+    await newCoupon.save();
+
+    res.status(200).json({
+        success: true,
+        message: 'Coupon created successfully.',
+        coupon: newCoupon
+    });
+})
+
+// Get All Coupons
+
+exports.getdiscountCoupon = catchAsyncError(async (req, res, next) => {
+
+    const discountCoupons = await Coupon.find();
+
+    // Convert Decimal128 fields to strings in the response
+    const formattedCoupons = discountCoupons.map((coupon) => ({
+        ...coupon._doc, // Spread other fields
+        discountValue: coupon.discountValue.toString(), // Convert Decimal128 to string
+        minPurchaseAmount: coupon.minPurchaseAmount.toString(), // Convert Decimal128 to string
+    }));
+
+    res.status(200).json({
+        success: true,
+        discountCoupon: formattedCoupons, // Send formatted coupons
+    });
+
+
+})
+
+// Active Deactive Coupons
+
+exports.couponAvailability = catchAsyncError(async (req, res, next) => {
+
+    const coupon = await Coupon.findById(req.params.id);
+
+    if (!coupon) {
+        return next(new ErrorHandler('Coupon not found', 404));
+    };
+
+    coupon.isActive = !coupon.isActive;
+
+    await coupon.save();
+
+    const message = coupon.isActive ? 'Coupon Active' : 'Coupon Deactive';
+
+    res.status(200).json({
+        success: true,
+        message: message,
+    });
+
+})
+
+exports.deleteCoupon = catchAsyncError(async(req, res, next) =>{
+
+    const coupon = await Coupon.findByIdAndDelete(req.params.id);
+
+    if (!coupon) {
+        return next(new ErrorHandler('Coupon not found', 404));
+    };
+
+    return res.status(200).json({
+        success: true,
+        message: 'Coupon deleted successfully',
+    });
 })
