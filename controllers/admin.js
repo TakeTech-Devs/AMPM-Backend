@@ -12,6 +12,7 @@ const Consummer = require('../models/consumerModel');
 const Product = require('../models/productModel');
 const Coupon = require('../models/discountCouponModel');
 const mongoose = require('mongoose');
+const Subscribe = require('../models/subscribeModel');
 
 
 
@@ -55,6 +56,48 @@ exports.adminLogin = catchAsyncError(async (req, res, next) => {
     }
 
     sendToken(admin, 200, res)
+})
+
+
+// Delete Admin
+
+exports.deleteAdmin = catchAsyncError(async(req, res, next) =>{
+
+    const admin = await Admin.findByIdAndDelete(req.params.id);
+
+    if (!admin) {
+        return next(new ErrorHandler('Admin not found', 404));
+    };
+
+    return res.status(200).json({
+        success: true,
+        message: 'Admin deleted successfully',
+    });
+})
+
+// Update Admin
+
+exports.updateAdmin = catchAsyncError (async(req, res, next) =>{
+    const { name, email, password } = req.body; // Adjust fields based on your Admin model schema.
+
+    // Ensure the admin exists
+    const admin = await Admin.findById(req.params.id);
+    if (!admin) {
+        return next(new ErrorHandler('Admin not found', 404));
+    }
+
+    // Update the admin fields
+    admin.name = name || admin.name; // Update only if a new value is provided
+    admin.email = email || admin.email;
+    admin.password = password || admin.password;
+
+    await admin.save();
+
+    return res.status(200).json({
+        success: true,
+        message: 'Admin updated successfully',
+        admin,
+    });
 })
 
 //Logout
@@ -780,6 +823,8 @@ exports.couponAvailability = catchAsyncError(async (req, res, next) => {
 
 })
 
+// delete Coupon
+
 exports.deleteCoupon = catchAsyncError(async(req, res, next) =>{
 
     const coupon = await Coupon.findByIdAndDelete(req.params.id);
@@ -792,4 +837,17 @@ exports.deleteCoupon = catchAsyncError(async(req, res, next) =>{
         success: true,
         message: 'Coupon deleted successfully',
     });
+})
+
+// Subscribe
+
+exports.subscriberList = catchAsyncError(async(req, res, next) =>{
+    
+    const subscribers = await Subscribe.find();
+
+    res.status(200).json({
+        success: true,
+        subscribers
+    });
+
 })

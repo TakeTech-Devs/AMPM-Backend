@@ -111,3 +111,29 @@ exports.updateProfile = catchAsyncError(async (req, res, next) =>{
         reseller
     });
 })
+
+// Update Password
+
+exports.updatePassword = catchAsyncError(async(req, res, next) =>{
+
+    const reseller = await Reseller.findById(req.reseller.id).select("+businessPassword");
+
+    const isPasswordMatched = await reseller.comparePassword(req.body.oldPassword);
+
+    if (!isPasswordMatched){
+        return next (new ErrorHandler("Old password is incorrect", 400));
+    }
+
+    if(req.body.newPassword !== req.body.confirmPassword){
+        return next (new ErrorHandler("Password does not match", 400));
+    }
+
+    reseller.businessPassword = req.body.newPassword;
+
+    await reseller.save();
+
+    res.status(200).json({
+        success: true,
+        reseller
+    });
+})

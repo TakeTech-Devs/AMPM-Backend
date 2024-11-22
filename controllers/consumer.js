@@ -108,3 +108,29 @@ exports.updateProfile = catchAsyncError(async (req, res, next) =>{
         consummer
     });
 })
+
+// Update Password
+
+exports.updatePassword = catchAsyncError(async(req, res, next) =>{
+
+    const consummer = await Consummer.findById(req.consummer.id).select("+password");
+
+    const isPasswordMatched = await consummer.comparePassword(req.body.oldPassword);
+
+    if (!isPasswordMatched){
+        return next (new ErrorHandler("Old password is incorrect", 400));
+    }
+
+    if(req.body.newPassword !== req.body.confirmPassword){
+        return next (new ErrorHandler("Password does not match", 400));
+    }
+
+    consummer.password = req.body.newPassword;
+
+    await consummer.save();
+
+    res.status(200).json({
+        success: true,
+        consummer
+    });
+})

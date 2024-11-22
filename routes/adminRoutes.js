@@ -1,5 +1,5 @@
 const express = require('express'); 
-const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile, productHeader, amaronBattery, batteryCard, featureProduct, getProductData, deleteFeatureProductPoint, creatediscountCoupon, getdiscountCoupon, couponAvailability, deleteCoupon } = require('../controllers/admin');
+const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile, productHeader, amaronBattery, batteryCard, featureProduct, getProductData, deleteFeatureProductPoint, creatediscountCoupon, getdiscountCoupon, couponAvailability, deleteCoupon, subscriberList, deleteAdmin, updateAdmin } = require('../controllers/admin');
 const { isAdmin, authorizeRoles } = require('../middleware/auth');
 const router = express.Router();
 
@@ -11,6 +11,8 @@ router.route('/logout').get(logout);
 router.route('/profile').get(isAdmin ,getAdminProfile);
 // router.route('/admins').get(isAdmin, authorizeRoles("admin"), adminList);
 router.route('/admins').get(adminList);
+router.route('/admin/:id').delete(deleteAdmin);
+router.route('/update/:id').put(updateAdmin);
 
 // Reseller
 // router.route('/reseller/approve/:id').put(isAdmin, authorizeRoles("admin"), resellerApproval);
@@ -69,5 +71,10 @@ router.route('/create-coupon').post(creatediscountCoupon)
 router.route('/get-coupons').get(getdiscountCoupon)
 router.route('/coupon/availability/:id').put(couponAvailability);
 router.route('/coupon/:id').delete(deleteCoupon);
+
+
+// Subscribers
+
+router.route('/get-subscribers').get(subscriberList);
 
 module.exports = router;
