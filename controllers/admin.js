@@ -13,6 +13,7 @@ const Product = require('../models/productModel');
 const Coupon = require('../models/discountCouponModel');
 const mongoose = require('mongoose');
 const Subscribe = require('../models/subscribeModel');
+const Testimonial = require('../models/testimonialModel');
 
 
 
@@ -848,6 +849,40 @@ exports.subscriberList = catchAsyncError(async(req, res, next) =>{
     res.status(200).json({
         success: true,
         subscribers
+    });
+
+})
+
+// Testimonial
+
+// Create Testimonial
+
+exports.createTestimonial = catchAsyncError(async (req, res, next) =>{
+    
+    const { name, role, testimonial, rating } = req.body
+
+    await Testimonial.create({
+        name,
+        role,
+        testimonial,
+        rating
+    })
+
+    res.status(200).json({
+        success: true,
+        message: 'Testimonial created successfully',
+    })
+})
+
+// Get Testimonial
+
+exports.testimonialList = catchAsyncError(async(req, res, next) =>{
+    
+    const testimonialList = await Testimonial.find();
+
+    res.status(200).json({
+        success: true,
+        testimonialList
     });
 
 })
