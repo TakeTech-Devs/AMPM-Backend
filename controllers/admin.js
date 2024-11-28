@@ -15,6 +15,10 @@ const mongoose = require('mongoose');
 const Subscribe = require('../models/subscribeModel');
 const Testimonial = require('../models/testimonialModel');
 const sendEmail = require('../utils/sendEmail');
+const dotenv = require('dotenv');
+
+
+dotenv.config({ path: "config/config.env" });
 
 
 
@@ -598,12 +602,15 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
 
     let customMessage = "";
 
+    const url = "http://localhost:5000"
+
     if (req.body.status === "Shipped") {
         customMessage = `Hello, your order with ID ${order._id} has been shipped. 
 You can expect delivery soon. Here are the items in your order:\n\n${itemsList}\n\nStay tuned for more updates!`;
     } else if (req.body.status === "Delivered") {
         customMessage = `Hello, your order with ID ${order._id} has been delivered. 
-Thank you for shopping with us! Here are the items in your order:\n\n${itemsList}\n\nWe hope to see you again.`;
+Thank you for shopping with us! Here are the items in your order:\n\n${itemsList}\n\n
+We hope to see you again.\n\nDownload your invoice here: ${process.env.BASE_URL}/api/v1/invoice/${order._id}`;
     }
 
     if (shippingemail && customMessage) {
