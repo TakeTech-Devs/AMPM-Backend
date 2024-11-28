@@ -602,15 +602,21 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
 
     let customMessage = "";
 
-    const url = "http://localhost:5000"
-
     if (req.body.status === "Shipped") {
-        customMessage = `Hello, your order with ID ${order._id} has been shipped. 
-You can expect delivery soon. Here are the items in your order:\n\n${itemsList}\n\nStay tuned for more updates!`;
+        customMessage = `
+        <p>Hello, your order with ID <strong>${order._id}</strong> has been shipped.</p>
+        <p>You can expect delivery soon. Here are the items in your order:</p>
+        <pre>${itemsList}</pre>
+        <p>Stay tuned for more updates!</p>`;
     } else if (req.body.status === "Delivered") {
-        customMessage = `Hello, your order with ID ${order._id} has been delivered. 
-Thank you for shopping with us! Here are the items in your order:\n\n${itemsList}\n\n
-We hope to see you again.\n\nDownload your invoice here: ${process.env.BASE_URL}/api/v1/invoice/${order._id}`;
+        const invoiceUrl = `${process.env.BASE_URL}/api/v1/invoice/${order._id}`;
+        customMessage = `
+            <p>Hello, your order with ID <strong>${order._id}</strong> has been delivered.</p>  
+            <p>Thank you for shopping with us! Here are the items in your order:</p>
+            <pre>${itemsList}</pre>
+            <p>We hope to see you again.</p>
+            <p><a href="${invoiceUrl}" target="_blank" style="color: blue; text-decoration: underline;">Click Me</a> to download your invoice.</p>
+            `;
     }
 
     if (shippingemail && customMessage) {
@@ -619,6 +625,7 @@ We hope to see you again.\n\nDownload your invoice here: ${process.env.BASE_URL}
                 email: shippingemail,
                 subject: "Order Status 🛒",
                 message: customMessage,
+                html: customMessage,
             })
         } catch (error) {
             return next(new ErrorHandler(error.message, 500))
