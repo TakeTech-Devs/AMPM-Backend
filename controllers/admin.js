@@ -14,6 +14,7 @@ const Coupon = require('../models/discountCouponModel');
 const mongoose = require('mongoose');
 const Subscribe = require('../models/subscribeModel');
 const Testimonial = require('../models/testimonialModel');
+const sendEmail = require('../utils/sendEmail');
 
 
 
@@ -62,7 +63,7 @@ exports.adminLogin = catchAsyncError(async (req, res, next) => {
 
 // Delete Admin
 
-exports.deleteAdmin = catchAsyncError(async(req, res, next) =>{
+exports.deleteAdmin = catchAsyncError(async (req, res, next) => {
 
     const admin = await Admin.findByIdAndDelete(req.params.id);
 
@@ -78,7 +79,7 @@ exports.deleteAdmin = catchAsyncError(async(req, res, next) =>{
 
 // Update Admin
 
-exports.updateAdmin = catchAsyncError (async(req, res, next) =>{
+exports.updateAdmin = catchAsyncError(async (req, res, next) => {
     const { name, email, password } = req.body; // Adjust fields based on your Admin model schema.
 
     // Ensure the admin exists
@@ -585,11 +586,47 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
         order.deliveredAt = Date.now();
     }
 
+
+
+    const shippingemail = order.shippingInfo?.email;
+
+    // console.log("Email:", shippingemail)
+
+    const itemsList = order.orderItems
+        .map(item => `- ${item.name} (Quantity: ${item.quantity}) (Price: ${item.price})`)
+        .join("\n");
+
+    let customMessage = "";
+
+    if (req.body.status === "Shipped") {
+        customMessage = `Hello, your order with ID ${order._id} has been shipped. 
+You can expect delivery soon. Here are the items in your order:\n\n${itemsList}\n\nStay tuned for more updates!`;
+    } else if (req.body.status === "Delivered") {
+        customMessage = `Hello, your order with ID ${order._id} has been delivered. 
+Thank you for shopping with us! Here are the items in your order:\n\n${itemsList}\n\nWe hope to see you again.`;
+    }
+
+    if (shippingemail && customMessage) {
+        try {
+            await sendEmail({
+                email: shippingemail,
+                subject: "Order Status 🛒",
+                message: customMessage,
+            })
+        } catch (error) {
+            return next(new ErrorHandler(error.message, 500))
+        }
+    }
+
     await order.save({ validateBeforeSave: false });
 
-    res.status(200).json({
-        success: true
-    });
+    try {
+        res.status(200).json({
+            success: true
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500))
+    }
 });
 
 // Product
@@ -826,7 +863,7 @@ exports.couponAvailability = catchAsyncError(async (req, res, next) => {
 
 // delete Coupon
 
-exports.deleteCoupon = catchAsyncError(async(req, res, next) =>{
+exports.deleteCoupon = catchAsyncError(async (req, res, next) => {
 
     const coupon = await Coupon.findByIdAndDelete(req.params.id);
 
@@ -842,8 +879,8 @@ exports.deleteCoupon = catchAsyncError(async(req, res, next) =>{
 
 // Subscribe
 
-exports.subscriberList = catchAsyncError(async(req, res, next) =>{
-    
+exports.subscriberList = catchAsyncError(async (req, res, next) => {
+
     const subscribers = await Subscribe.find();
 
     res.status(200).json({
@@ -857,8 +894,8 @@ exports.subscriberList = catchAsyncError(async(req, res, next) =>{
 
 // Create Testimonial
 
-exports.createTestimonial = catchAsyncError(async (req, res, next) =>{
-    
+exports.createTestimonial = catchAsyncError(async (req, res, next) => {
+
     const { name, role, testimonial, rating } = req.body
 
     await Testimonial.create({
@@ -876,8 +913,8 @@ exports.createTestimonial = catchAsyncError(async (req, res, next) =>{
 
 // Get Testimonial
 
-exports.testimonialList = catchAsyncError(async(req, res, next) =>{
-    
+exports.testimonialList = catchAsyncError(async (req, res, next) => {
+
     const testimonialList = await Testimonial.find();
 
     res.status(200).json({
