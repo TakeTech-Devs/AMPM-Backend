@@ -7,6 +7,7 @@ const path = require("path");
 const os = require('os');
 const puppeteer = require('puppeteer');
 const pdf = require('html-pdf-node');
+const { toWords } = require('number-to-words');
 
 // New Order 
 
@@ -87,6 +88,17 @@ exports.getSingleOrderDetails = catchAsyncError(async (req, res, next) => {
     });
 });
 
+
+function convertPriceToWords(price) {
+    const integerPart = Math.floor(price);
+    const decimalPart = Math.round((price % 1) * 100);
+
+    const words =
+        toWords(integerPart) +
+        (decimalPart > 0 ? ` and ${toWords(decimalPart)} paise` : '') +
+        ' only';
+    return words.charAt(0).toUpperCase() + words.slice(1); // Capitalize the first letter
+}
 // Get Invoice 
 
 exports.getInvoice = catchAsyncError(async (req, res, next) => {
@@ -104,6 +116,10 @@ exports.getInvoice = catchAsyncError(async (req, res, next) => {
         const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
         const logoDataUrl = `data:image/png;base64,${logoBase64}`;
 
+        const totalPriceInWords = convertPriceToWords(order.totalPrice);
+
+        
+
         // Replace placeholders with order data
         const orderItemsHtml = order.orderItems.map(item => `
             <tr>
@@ -119,10 +135,13 @@ exports.getInvoice = catchAsyncError(async (req, res, next) => {
             .replace('{{orderId}}', order._id)
             .replace('{{customerName}}', `${order.shippingInfo.firstName} ${order.shippingInfo.lastName}`)
             .replace('{{customerAddress}}', `${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state}`)
+            .replace('{{customerPhone}}', `${order.shippingInfo.phone}`)
+            .replace('{{customerEmail}}', `${order.shippingInfo.email}`)
             .replace('{{date}}', new Date(order.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
             .replace('{{invoiceDate}}', new Date(order.deliveredAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
             .replace('{{orderItems}}', orderItemsHtml)
-            .replace('{{totalPrice}}', `₹${order.totalPrice.toFixed(2)}`);
+            .replace('{{totalPrice}}', `₹${order.totalPrice.toFixed(2)}`)
+            .replace('{{totalPriceInWord}}', `${totalPriceInWords}`);
 
         // Convert HTML to PDF
         const pdfOptions = { format: 'A4' };

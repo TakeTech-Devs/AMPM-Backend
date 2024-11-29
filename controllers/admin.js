@@ -607,7 +607,8 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
         <p>Hello, your order with ID <strong>${order._id}</strong> has been shipped.</p>
         <p>You can expect delivery soon. Here are the items in your order:</p>
         <pre>${itemsList}</pre>
-        <p>Stay tuned for more updates!</p>`;
+        <p>Stay tuned for more updates!</p>
+        `;
     } else if (req.body.status === "Delivered") {
         const invoiceUrl = `${process.env.BASE_URL}/api/v1/invoice/${order._id}`;
         customMessage = `

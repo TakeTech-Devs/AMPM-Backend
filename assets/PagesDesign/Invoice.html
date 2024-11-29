@@ -23,6 +23,14 @@
         width: 100px;
         height: auto;
       }
+      .details-section {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .details-column {
+        width: 45%;
+      }
       table {
         width: 100%;
         border-collapse: collapse;
@@ -48,15 +56,36 @@
     <div class="container">
       <div class="header">
         <img src="{{logoUrl}}" alt="Logo" />
-        <h1>Invoice</h1>
+        <h1>Tax Invoice</h1>
       </div>
 
-      <p><strong>Order ID:</strong> {{orderId}}</p>
-      <p><strong>Customer Name:</strong> {{customerName}}</p>
-      <p><strong>Customer Address:</strong> {{customerAddress}}</p>
-      <p><strong>Order Date:</strong> {{date}}</p>
-      <p><strong>Invoice Date:</strong> {{invoiceDate}}</p>
+      <!-- Customer and Seller Details Section -->
+      <div class="details-section">
+        <!-- Customer Details -->
+        <div class="details-column">
+          <p><strong>Order ID:</strong> {{orderId}}</p>
+          <p><strong>Customer Name:</strong> {{customerName}}</p>
+          <p><strong>Shipping Address:</strong> {{customerAddress}}</p>
+          <p><strong>Customer Phone:</strong> {{customerPhone}}</p>
+          <p><strong>Customer Email:</strong> {{customerEmail}}</p>
+          <p><strong>Order Date:</strong> {{date}}</p>
+          <p><strong>Invoice Date:</strong> {{invoiceDate}}</p>
+        </div>
 
+        <!-- Seller Details -->
+        <div class="details-column">
+          <p><strong>Sold By:</strong></p>
+          <p>
+            <strong>AMPM</strong><br />
+            West Bengal,<br />
+            9632587412,<br />
+            ampm@gmail.com,<br />
+            GSTIN: 12345678945632159
+          </p>
+        </div>
+      </div>
+
+      <!-- Order Items Table -->
       <table>
         <thead>
           <tr>
@@ -71,8 +100,10 @@
         </tbody>
       </table>
 
+      <!-- Footer Section -->
       <div class="footer">
         <p><strong>Total Price:</strong> {{totalPrice}}</p>
+        <p><strong>Total Price In Words:</strong> {{totalPriceInWord}}</p>
       </div>
     </div>
   </body>
