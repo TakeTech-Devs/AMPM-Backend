@@ -27,7 +27,7 @@ const resellerSchema = new mongoose.Schema({
         type: String,
         default: "N.A."
     },
-    password: {
+    businessPassword: {
         type: String,
         required: true
     },
@@ -41,21 +41,21 @@ const resellerSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
 })
 
 //password hashing
 resellerSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) {
+    if (!this.isModified("businessPassword")) {
         next();
     }
-    this.password = await bcrypt.hash(this.password, 10);
+    this.businessPassword = await bcrypt.hash(this.businessPassword, 10);
 });
 
 // compare Password
 resellerSchema.methods.comparePassword = async function (enteredPassword) {
-    return bcrypt.compare(enteredPassword, this.password);
+    return bcrypt.compare(enteredPassword, this.businessPassword);
 }
 
 // JWT token

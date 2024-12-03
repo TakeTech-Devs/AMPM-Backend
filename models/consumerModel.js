@@ -23,7 +23,7 @@ const consumerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    subrub: {
+    suburb: {
         type: String,
         required: true
     },
@@ -45,7 +45,7 @@ const consumerSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
 });
 

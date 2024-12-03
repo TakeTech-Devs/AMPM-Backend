@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+      }
+
+      p {
+        margin-block: 5px;
+      }
+
+      .container {
+        margin: 20px;
+        /* Adds margin on all sides */
+        padding: 20px;
+        /* Adds padding inside the container */
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header img {
+        width: 100px;
+        height: auto;
+      }
+
+      .details-section {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .details-column {
+        width: 45%;
+      }
+
+      .right {
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+      }
+
+      .right-p {
+        text-align: end;
+      }
+
+      table {
+      width: 100%;
+      /* border-collapse: collapse; */
+      margin-top: 20px;
+      border: 1px solid #000;
+      border-radius: 5px;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid #000;
+      /* border-radius: 5px; */
+    }
+
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+
+      .footer {
+        margin-top: 30px;
+        text-align: right;
+      }
+
+      .bottom-p {
+        text-align: center;
+        margin-top: 45%;
+        margin-inline: 5%;
+        color: rgb(180, 180, 180);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="{{logoUrl}}" alt="Logo" />
+        <u><h1>Tax Invoice/Cash Memo</h1></u>
+      </div>
+
+      <!-- Customer and Seller Details Section -->
+      <div class="details-section">
+        <!-- Customer Details -->
+        <div class="details-column">
+          <p><strong>Order ID:</strong> {{orderId}}</p>
+          <p><strong>Customer Name:</strong> {{customerName}}</p>
+          <p><strong>Shipping Address:</strong> {{customerAddress}}</p>
+          <p><strong>Customer Phone:</strong> {{customerPhone}}</p>
+          <p><strong>Customer Email:</strong> {{customerEmail}}</p>
+          <p><strong>Order Date:</strong> {{date}}</p>
+          <p><strong>Invoice Date:</strong> {{invoiceDate}}</p>
+        </div>
+
+        <!-- Seller Details -->
+        <div class="details-column right">
+          <p><strong>Sold By:</strong></p>
+          <p>AMPM A Battery Company</p>
+          <p>Kolkata, West Bengal, 710000</p>
+          <p><strong>GSTIN: </strong>20BQWPK3378N1Z5</p>
+        </div>
+      </div>
+
+      <!-- Order Items Table -->
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Net Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{orderItems}}
+        </tbody>
+      </table>
+
+      <!-- Footer Section -->
+      <div class="footer">
+        <p><strong>Total Price:</strong> {{totalPrice}}</p>
+        <p><strong>Total Price In Words:</strong> {{totalPriceInWord}}</p>
+      </div>
+
+      <p class="bottom-p">
+        *Customers who want to take advantage of the input GST credit are asked
+        to open a business account and buy from business-eligible offers at
+        AMPM. Please be aware that there is no demand for payment on this
+        invoice.
+      </p>
+    </div>
+  </body>
+</html>
