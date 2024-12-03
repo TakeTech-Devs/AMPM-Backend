@@ -5,8 +5,8 @@ const PDFDocument = require('pdfkit');
 const fs = require("fs");
 const path = require("path");
 const os = require('os');
-const puppeteer = require('puppeteer');
-const pdf = require('html-pdf-node');
+// const puppeteer = require('puppeteer');
+// const pdf = require('html-pdf-node');
 const { toWords } = require('number-to-words');
 
 // New Order 
@@ -101,61 +101,61 @@ function convertPriceToWords(price) {
 }
 // Get Invoice 
 
-exports.getInvoice = catchAsyncError(async (req, res, next) => {
-    try {
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return next(new ErrorHandler("Order Not Found", 404));
-        }
+// exports.getInvoice = catchAsyncError(async (req, res, next) => {
+//     try {
+//         const order = await Order.findById(req.params.id);
+//         if (!order) {
+//             return next(new ErrorHandler("Order Not Found", 404));
+//         }
 
-        // Load the HTML template
-        const templatePath = path.join(__dirname, '../assets/PagesDesign/Invoice.html');
-        let htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
+//         // Load the HTML template
+//         const templatePath = path.join(__dirname, '../assets/PagesDesign/Invoice.html');
+//         let htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
 
-        const logoPath = path.join(__dirname, "../assets/login-page-logo.png");
-        const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
-        const logoDataUrl = `data:image/png;base64,${logoBase64}`;
+//         const logoPath = path.join(__dirname, "../assets/login-page-logo.png");
+//         const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
+//         const logoDataUrl = `data:image/png;base64,${logoBase64}`;
 
-        const totalPriceInWords = convertPriceToWords(order.totalPrice);
+//         const totalPriceInWords = convertPriceToWords(order.totalPrice);
 
         
 
-        // Replace placeholders with order data
-        const orderItemsHtml = order.orderItems.map(item => `
-            <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>₹${item.price.toFixed(2)}</td>
-                <td>₹${(item.price * item.quantity).toFixed(2)}</td>
-            </tr>
-        `).join('');
+//         // Replace placeholders with order data
+//         const orderItemsHtml = order.orderItems.map(item => `
+//             <tr>
+//                 <td>${item.name}</td>
+//                 <td>${item.quantity}</td>
+//                 <td>₹${item.price.toFixed(2)}</td>
+//                 <td>₹${(item.price * item.quantity).toFixed(2)}</td>
+//             </tr>
+//         `).join('');
 
-        htmlTemplate = htmlTemplate
-            .replace('{{logoUrl}}', logoDataUrl)
-            .replace('{{orderId}}', order._id)
-            .replace('{{customerName}}', `${order.shippingInfo.firstName} ${order.shippingInfo.lastName}`)
-            .replace('{{customerAddress}}', `${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state}`)
-            .replace('{{customerPhone}}', `${order.shippingInfo.phone}`)
-            .replace('{{customerEmail}}', `${order.shippingInfo.email}`)
-            .replace('{{date}}', new Date(order.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
-            .replace('{{invoiceDate}}', new Date(order.deliveredAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
-            .replace('{{orderItems}}', orderItemsHtml)
-            .replace('{{totalPrice}}', `₹${order.totalPrice.toFixed(2)}`)
-            .replace('{{totalPriceInWord}}', `${totalPriceInWords}`);
+//         htmlTemplate = htmlTemplate
+//             .replace('{{logoUrl}}', logoDataUrl)
+//             .replace('{{orderId}}', order._id)
+//             .replace('{{customerName}}', `${order.shippingInfo.firstName} ${order.shippingInfo.lastName}`)
+//             .replace('{{customerAddress}}', `${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state}`)
+//             .replace('{{customerPhone}}', `${order.shippingInfo.phone}`)
+//             .replace('{{customerEmail}}', `${order.shippingInfo.email}`)
+//             .replace('{{date}}', new Date(order.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
+//             .replace('{{invoiceDate}}', new Date(order.deliveredAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
+//             .replace('{{orderItems}}', orderItemsHtml)
+//             .replace('{{totalPrice}}', `₹${order.totalPrice.toFixed(2)}`)
+//             .replace('{{totalPriceInWord}}', `${totalPriceInWords}`);
 
-        // Convert HTML to PDF
-        const pdfOptions = { format: 'A4' };
-        const pdfBuffer = await pdf.generatePdf({ content: htmlTemplate }, pdfOptions);
+//         // Convert HTML to PDF
+//         const pdfOptions = { format: 'A4' };
+//         const pdfBuffer = await pdf.generatePdf({ content: htmlTemplate }, pdfOptions);
 
-        // Send the PDF to the client
-        res.set({
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename=invoice_${req.params.id}.pdf`,
-        });
-        res.send(pdfBuffer);
-    } catch (error) {
-        console.error("Error generating invoice:", error);
-        return next(new ErrorHandler("Error generating the invoice", 500));
-    }
+//         // Send the PDF to the client
+//         res.set({
+//             'Content-Type': 'application/pdf',
+//             'Content-Disposition': `attachment; filename=invoice_${req.params.id}.pdf`,
+//         });
+//         res.send(pdfBuffer);
+//     } catch (error) {
+//         console.error("Error generating invoice:", error);
+//         return next(new ErrorHandler("Error generating the invoice", 500));
+//     }
 
-})
+// })
