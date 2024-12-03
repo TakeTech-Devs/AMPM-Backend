@@ -3,6 +3,8 @@ const ErrorHandler = require('../utils/errorhandler');
 const ContactUs = require('../models/contactUsModel');
 const Subscribe = require('../models/subscribeModel');
 const Coupon = require('../models/discountCouponModel');
+const sendEmail = require('../utils/sendEmail');
+const Order = require('../models/orderModel');
 
 exports.contactUsForm = catchAsyncError(async (req, res, next) => {
 
@@ -16,7 +18,21 @@ exports.contactUsForm = catchAsyncError(async (req, res, next) => {
         message
     });
 
+    const queries = `
+    <p>Dear ${contactus.name},</p>
+    <p>Thank you for getting in touch with us! We’ve received your message and appreciate you taking the time to reach out. Our team is reviewing your inquiry and will respond as soon as possible.</p>
+    <p>We’re here to help and will get back to you within 48 hours.</p>
+    <p>Thank you for choosing AMPM!</p>
+    <p>Best regards,<br>AMPM Team</p>
+`;
+
     try {
+        await sendEmail({
+            email: contactus.email,
+            subject: "We’re on It! Your Query Has Been Received",
+            message: queries,
+            html: queries,
+        })
         res.status(200).json({
             success: true,
             message: "Message Successfull Send"
@@ -93,4 +109,28 @@ exports.applyCoupon = catchAsyncError(async (req, res, next) => {
         totalAfterDiscount,
     });
 
+})
+
+// Cancel order
+
+exports.cancelOrder = catchAsyncError(async(req, res, next) =>{
+    const order = await Order.findById(req.params.id)
+
+    if (!order){
+        return next(new ErrorHandler("Order not found", 404))
+    }
+
+    if(order.orderStatus === "Delivered"){
+        return next(new ErrorHandler('Order is already Delivered and cannot be Cancel.'));
+    }
+
+    order.orderStatus = "Cancel";
+    order.cancelAt = Date.now();
+    
+    await order.save();
+
+    res.status(200).json({
+        success: true,
+        message: 'Order Cancel successfully',
+    });
 })

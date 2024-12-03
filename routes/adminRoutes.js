@@ -1,5 +1,5 @@
 const express = require('express'); 
-const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile, productHeader, amaronBattery, batteryCard, featureProduct, getProductData, deleteFeatureProductPoint, creatediscountCoupon, getdiscountCoupon, couponAvailability, deleteCoupon, subscriberList, deleteAdmin, updateAdmin, createTestimonial, testimonialList } = require('../controllers/admin');
+const { adminRegistration, adminLogin, logout, resellerApproval, homeHeader, homeHighlight, batteriesSection, homeContactUs, aboutHeader, ourMission, weDoSection, contactInfo, getContactUsData, getAllOrders, updateOrder, resellerList, consumerList, adminList, getAdminProfile, productHeader, amaronBattery, batteryCard, featureProduct, getProductData, deleteFeatureProductPoint, creatediscountCoupon, getdiscountCoupon, couponAvailability, deleteCoupon, subscriberList, deleteAdmin, updateAdmin, createTestimonial, testimonialList, resolveQueries } = require('../controllers/admin');
 const { isAdmin, authorizeRoles } = require('../middleware/auth');
 const router = express.Router();
 
@@ -45,11 +45,13 @@ router.route('/create-aboutWeDo').post(weDoSection);
 // Contact Info
 // router.route('/create-contactInfo').post(isAdmin, authorizeRoles("admin"), contactInfo);
 router.route('/create-contactInfo').post(contactInfo);
+router.route('/queries/resolve/:id').put(resolveQueries);
 
 
 // ContactUs Data
 // router.route('/get-contactUs').get(isAdmin, authorizeRoles("admin"), getContactUsData);
 router.route('/get-contactUs').get(getContactUsData);
+
 
 // Order
 // router.route('/get-allOrders').get(isAdmin, authorizeRoles("admin"), getAllOrders)

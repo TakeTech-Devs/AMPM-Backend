@@ -499,6 +499,34 @@ exports.getContactUsData = catchAsyncError(async (req, res, next) => {
     })
 })
 
+// Queries Resolve
+
+exports.resolveQueries = catchAsyncError(async(req, res, next) =>{
+    const query = await ContactUs.findById(req.params.id);
+
+    if (!query) {
+        return next(new ErrorHandler('Query not found', 404));
+    }
+
+    // If status is already true, do not allow it to be changed again
+    if (query.status === true) {
+        return res.status(400).json({
+            success: false,
+            message: 'Query is already resolved and cannot be changed.',
+        });
+    }
+
+    // If status is false, change it to true
+    query.status = true;
+
+    await query.save();
+
+    res.status(200).json({
+        success: true,
+        message: 'Query resolved successfully',
+    });
+})
+
 // Order
 
 // Get All Orders
@@ -574,9 +602,15 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Order Not Found", 404));
     }
 
+    if(order.orderStatus === "Cancel"){
+        return next(new ErrorHandler("Order is Cancelled", 400));
+    }
+
     if (order.orderStatus === "Delivered") {
         return next(new ErrorHandler("Already Delivered", 400));
     }
+
+
 
     if (req.body.status === "Shipped") {
         order.shippedAt = Date.now();
@@ -586,6 +620,7 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
     }
 
     order.orderStatus = req.body.status;
+    
     if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
     }
