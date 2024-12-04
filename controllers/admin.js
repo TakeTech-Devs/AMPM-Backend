@@ -574,9 +574,9 @@ exports.getAllOrders = catchAsyncError(async (req, res, next) => {
     // Fetch orders based on the filter
     const orders = await Order.find(filter);
 
-    if (!orders || orders.length === 0) {
-        return next(new ErrorHandler("Order Not Found", 404));
-    }
+    // if (!orders || orders.length === 0) {
+    //     return next(new ErrorHandler("Order Not Found", 404));
+    // }
 
     // Calculate the total amount
     let totalAmount = 0;

@@ -15,7 +15,7 @@ const cors = require('cors');
 //     credentials:true
 // }));
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'https://ampmenergy.com.au','https://www.admin.ampmenergy.com.au','https://admin.ampmenergy.com.au'];
 
 
 const corsOptions = {
