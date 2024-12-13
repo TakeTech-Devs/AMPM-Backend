@@ -9,6 +9,7 @@ const os = require('os');
 // const pdf = require('html-pdf-node');
 const { toWords } = require('number-to-words');
 const pdf = require('html-pdf')
+const Coupon = require('../models/discountCouponModel');
 
 
 // New Order 
@@ -19,6 +20,7 @@ exports.newOrder = catchAsyncError(async (req, res, next) => {
         orderItems,
         // paymentInfo,
         totalPrice,
+        couponCode
     } = req.body
 
     // const orderExist = await Order.findOne({ paymentInfo });
@@ -34,6 +36,30 @@ exports.newOrder = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Unauthorized access", 401));
     }
 
+    if (couponCode) {
+        const coupon = await Coupon.findOne({ code: couponCode });
+
+        if (!coupon) {
+            return next(new ErrorHandler("Invalid coupon code", 400));
+        }
+
+        if (coupon.numberOfCoupon !== null && coupon.numberOfCoupon !== Infinity) {
+            if (coupon.numberOfCoupon <= 0) {
+                return next(new ErrorHandler("Coupon usage limit reached", 400));
+            }
+
+            // Decrement numberOfCoupon
+            coupon.numberOfCoupon -= 1;
+
+            if (coupon.numberOfCoupon === 0) {
+                coupon.isActive = false;
+            }
+
+            
+            await coupon.save();
+        }
+    }
+
     const order = await Order.create({
         shippingInfo,
         orderItems,
@@ -41,6 +67,7 @@ exports.newOrder = catchAsyncError(async (req, res, next) => {
         totalPrice,
         paidAt: Date.now(),
         oredeBy: orderedBy,
+        couponCode: couponCode || null,
     })
 
     res.status(201).json({
@@ -167,5 +194,5 @@ exports.getInvoice = catchAsyncError(async (req, res, next) => {
     } catch (error) {
         console.error("Error generating invoice:", error);
         return next(new ErrorHandler("Error generating the invoice", 500));
-    } 
+    }
 })

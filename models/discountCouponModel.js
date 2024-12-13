@@ -18,6 +18,10 @@ const couponSchema = new mongoose.Schema({
         required: true,
         min: 0,
     },
+    numberOfCoupon:{
+        type:Number,
+        default: Infinity
+    },
     minPurchaseAmount: {
         type: mongoose.Schema.Types.Decimal128,
         default: 0,
