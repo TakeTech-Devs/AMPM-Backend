@@ -8,6 +8,9 @@ const os = require('os');
 // const puppeteer = require('puppeteer');
 // const pdf = require('html-pdf-node');
 const { toWords } = require('number-to-words');
+const pdf = require('html-pdf')
+const Coupon = require('../models/discountCouponModel');
+
 
 // New Order 
 
@@ -17,6 +20,7 @@ exports.newOrder = catchAsyncError(async (req, res, next) => {
         orderItems,
         // paymentInfo,
         totalPrice,
+        couponCode
     } = req.body
 
     // const orderExist = await Order.findOne({ paymentInfo });
@@ -32,6 +36,30 @@ exports.newOrder = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Unauthorized access", 401));
     }
 
+    if (couponCode) {
+        const coupon = await Coupon.findOne({ code: couponCode });
+
+        if (!coupon) {
+            return next(new ErrorHandler("Invalid coupon code", 400));
+        }
+
+        if (coupon.numberOfCoupon !== null && coupon.numberOfCoupon !== Infinity) {
+            if (coupon.numberOfCoupon <= 0) {
+                return next(new ErrorHandler("Coupon usage limit reached", 400));
+            }
+
+            // Decrement numberOfCoupon
+            coupon.numberOfCoupon -= 1;
+
+            if (coupon.numberOfCoupon === 0) {
+                coupon.isActive = false;
+            }
+
+            
+            await coupon.save();
+        }
+    }
+
     const order = await Order.create({
         shippingInfo,
         orderItems,
@@ -39,6 +67,7 @@ exports.newOrder = catchAsyncError(async (req, res, next) => {
         totalPrice,
         paidAt: Date.now(),
         oredeBy: orderedBy,
+        couponCode: couponCode || null,
     })
 
     res.status(201).json({
@@ -101,61 +130,69 @@ function convertPriceToWords(price) {
 }
 // Get Invoice 
 
-// exports.getInvoice = catchAsyncError(async (req, res, next) => {
-//     try {
-//         const order = await Order.findById(req.params.id);
-//         if (!order) {
-//             return next(new ErrorHandler("Order Not Found", 404));
-//         }
+exports.getInvoice = catchAsyncError(async (req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return next(new ErrorHandler("Order Not Found", 404));
+        }
 
-//         // Load the HTML template
-//         const templatePath = path.join(__dirname, '../assets/PagesDesign/Invoice.html');
-//         let htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
+        // Load the HTML template
+        const templatePath = path.join(__dirname, '../assets/PagesDesign/Invoice.html');
+        let htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
 
-//         const logoPath = path.join(__dirname, "../assets/login-page-logo.png");
-//         const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
-//         const logoDataUrl = `data:image/png;base64,${logoBase64}`;
+        const logoPath = path.join(__dirname, "../assets/login-page-logo.png");
+        const logoBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
+        const logoDataUrl = `data:image/png;base64,${logoBase64}`;
 
-//         const totalPriceInWords = convertPriceToWords(order.totalPrice);
+        const totalPriceInWords = convertPriceToWords(order.totalPrice);
 
-        
+        // Replace placeholders with order data
+        const orderItemsHtml = order.orderItems.map(item => `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>₹${item.price.toFixed(2)}</td>
+                <td>₹${(item.price * item.quantity).toFixed(2)}</td>
+            </tr>
+        `).join('');
 
-//         // Replace placeholders with order data
-//         const orderItemsHtml = order.orderItems.map(item => `
-//             <tr>
-//                 <td>${item.name}</td>
-//                 <td>${item.quantity}</td>
-//                 <td>₹${item.price.toFixed(2)}</td>
-//                 <td>₹${(item.price * item.quantity).toFixed(2)}</td>
-//             </tr>
-//         `).join('');
+        htmlTemplate = htmlTemplate
+            .replace('{{logoUrl}}', logoDataUrl)
+            .replace('{{orderId}}', order._id)
+            .replace('{{customerName}}', `${order.shippingInfo.firstName} ${order.shippingInfo.lastName}`)
+            .replace('{{customerAddress}}', `${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state}`)
+            .replace('{{customerPhone}}', `${order.shippingInfo.phone}`)
+            .replace('{{customerEmail}}', `${order.shippingInfo.email}`)
+            .replace('{{date}}', new Date(order.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
+            .replace('{{invoiceDate}}', new Date(order.deliveredAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
+            .replace('{{orderItems}}', orderItemsHtml)
+            .replace('{{totalPrice}}', `₹${order.totalPrice.toFixed(2)}`)
+            .replace('{{totalPriceInWord}}', `${totalPriceInWords}`);
 
-//         htmlTemplate = htmlTemplate
-//             .replace('{{logoUrl}}', logoDataUrl)
-//             .replace('{{orderId}}', order._id)
-//             .replace('{{customerName}}', `${order.shippingInfo.firstName} ${order.shippingInfo.lastName}`)
-//             .replace('{{customerAddress}}', `${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state}`)
-//             .replace('{{customerPhone}}', `${order.shippingInfo.phone}`)
-//             .replace('{{customerEmail}}', `${order.shippingInfo.email}`)
-//             .replace('{{date}}', new Date(order.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
-//             .replace('{{invoiceDate}}', new Date(order.deliveredAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }))
-//             .replace('{{orderItems}}', orderItemsHtml)
-//             .replace('{{totalPrice}}', `₹${order.totalPrice.toFixed(2)}`)
-//             .replace('{{totalPriceInWord}}', `${totalPriceInWords}`);
+        // PDF options
+        const options = {
+            format: 'A4',
+            orientation: 'portrait',
+            border: '5mm',
+        };
 
-//         // Convert HTML to PDF
-//         const pdfOptions = { format: 'A4' };
-//         const pdfBuffer = await pdf.generatePdf({ content: htmlTemplate }, pdfOptions);
+        // Convert HTML to PDF
+        pdf.create(htmlTemplate, options).toBuffer((err, buffer) => {
+            if (err) {
+                console.error("Error generating PDF:", err);
+                return next(new ErrorHandler("Error generating the invoice", 500));
+            }
 
-//         // Send the PDF to the client
-//         res.set({
-//             'Content-Type': 'application/pdf',
-//             'Content-Disposition': `attachment; filename=invoice_${req.params.id}.pdf`,
-//         });
-//         res.send(pdfBuffer);
-//     } catch (error) {
-//         console.error("Error generating invoice:", error);
-//         return next(new ErrorHandler("Error generating the invoice", 500));
-//     }
-
-// })
+            // Send the PDF to the client
+            res.set({
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': `attachment; filename=invoice_${req.params.id}.pdf`,
+            });
+            res.send(buffer);
+        });
+    } catch (error) {
+        console.error("Error generating invoice:", error);
+        return next(new ErrorHandler("Error generating the invoice", 500));
+    }
+})

@@ -574,9 +574,9 @@ exports.getAllOrders = catchAsyncError(async (req, res, next) => {
     // Fetch orders based on the filter
     const orders = await Order.find(filter);
 
-    if (!orders || orders.length === 0) {
-        return next(new ErrorHandler("Order Not Found", 404));
-    }
+    // if (!orders || orders.length === 0) {
+    //     return next(new ErrorHandler("Order Not Found", 404));
+    // }
 
     // Calculate the total amount
     let totalAmount = 0;
@@ -839,7 +839,7 @@ exports.getProductData = catchAsyncError(async (req, res, next) => {
 // Create Coupon
 
 exports.creatediscountCoupon = catchAsyncError(async (req, res, next) => {
-    const { code, discountType, discountValue, minPurchaseAmount, expiryDate } = req.body;
+    const { code, discountType, discountValue, numberOfCoupon, minPurchaseAmount, expiryDate } = req.body;
 
     const discountValueDecimal = mongoose.Types.Decimal128.fromString(parseFloat(discountValue).toFixed(2));
     const minPurchaseAmountDecimal = mongoose.Types.Decimal128.fromString(parseFloat(minPurchaseAmount).toFixed(2));
@@ -854,6 +854,7 @@ exports.creatediscountCoupon = catchAsyncError(async (req, res, next) => {
         code,
         discountType,
         discountValue: discountValueDecimal,
+        numberOfCoupon,
         minPurchaseAmount: minPurchaseAmountDecimal,
         expiryDate,
     });
@@ -898,7 +899,10 @@ exports.couponAvailability = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler('Coupon not found', 404));
     };
 
-    coupon.isActive = !coupon.isActive;
+    // coupon.isActive = !coupon.isActive;
+    if (coupon.numberOfCoupon !== 0) {
+        coupon.isActive = !coupon.isActive;
+    }
 
     await coupon.save();
 
